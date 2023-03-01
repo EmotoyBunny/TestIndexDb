@@ -1,0 +1,12 @@
+{
+"android": {
+    "release": {
+       "keystore": "../../keystore/k-mobileapps.keystore",
+        "storePassword": "zxcvbn",
+        "alias": "Kmobileapps",
+        "password" : "zxcvbn",
+        "keystoreType": "jks",
+		"packageType": "apk"
+    }
+}
+}

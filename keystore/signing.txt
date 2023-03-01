@@ -1,0 +1,11 @@
+сordova\armclient\platforms\android\build\outputs\apk> jarsigner -verbose -s
+igalg SHA1withRSA -digestalg SHA1 -keystore k-mobileapps.keystore TaxiArmClient.apk Kmobi
+leapps
+
+jarsigner -verbose -s
+igalg SHA1withRSA -digestalg SHA1 -keystore k-mobileapps.keystore TaxiArmClient.apk Kmobi
+leapps
+
+jarsigner -verbose -s
+igalg SHA1withRSA -digestalg SHA1 -keystore k-mobileapps.keystore TaxiArmDriver.apk Kmobi
+leapps

@@ -1,0 +1,49 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-android-permissions": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-androidx-adapter": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-background-mode": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-file-opener2": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-local-notification-fixed": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-webview-checker": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-app-exit": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    }
+  },
+  "dependent_plugins": {
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-badge": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.trans.alrosa.transport"
+    }
+  }
+}
