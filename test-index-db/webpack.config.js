@@ -20,6 +20,13 @@ module.exports = (env) => {
         localStoragePrefix: "testIndexDb",
         allowedWebViewMajorVersion: 60,
 
+
+        apiUrl: "",
+
+        apiUrlDev: "",
+
+        apiUrlIndexMob: "",
+        baseNameIndexMob: "",
     };
     const capitalize = (s) => {
         if (typeof s !== "string") return "";
@@ -113,8 +120,7 @@ module.exports = (env) => {
         ],
         devServer: {
             historyApiFallback: true,
-            proxy: {
-            },
+            proxy: {},
 
         },
         target: goal === "dev" || goal === "local" ? "web" : "browserslist",
