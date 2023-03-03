@@ -4,6 +4,7 @@ import {Redirect, Route, Router, Switch} from "react-router-dom";
 import LoadingBar from "react-redux-loading-bar";
 
 import {Login} from "../_components/Login/Login"
+import {PouchDbComponent} from "../_components/PouchDbComponent";
 
 import CssBaseline from '@mui/material/CssBaseline';
 import red from "@mui/material/colors/red";
@@ -48,7 +49,7 @@ class App extends React.Component {
                     >
                         <Router history={history}>
                             <Switch>
-                                <Route exact path="/" component={Login}/>
+                                <Route exact path="/" component={PouchDbComponent}/>
                                 <Redirect from="*" to="/"/>
                             </Switch>
                         </Router>
