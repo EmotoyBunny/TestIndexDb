@@ -26,6 +26,7 @@ class PouchDbComponent extends React.Component {
     }
 
     componentDidMount = () => {
+        this.handleShowAll();
     };
 
     handleChange = (e, changeCallback) => {
@@ -43,8 +44,9 @@ class PouchDbComponent extends React.Component {
             title: JSON.stringify({param1: 10, param2: "asd"}),
             nameMethod: "nameMethod",
         }).then((response) => {
-            console.log(response)
-            this.handleShow(this.state.ownId)
+            console.log(response);
+            this.handleShow(this.state.ownId);
+            this.handleShowAll();
         }).catch(function (err) {
             console.log(err);
         });
@@ -53,10 +55,12 @@ class PouchDbComponent extends React.Component {
     // Генерация автоматического id
     handleAddNotId = () => {
         PouchDb.post({
-            title: JSON.stringify({param1: 10, param2: "asd"})
+            title: JSON.stringify({param1: 10, param2: "asd"}),
+            nameMethod: "nameMethod",
         }).then((response) => {
-            console.log(response)
-            this.handleShow(this.state.ownId)
+            console.log(response);
+            this.handleShow(this.state.ownId);
+            this.handleShowAll();
         }).catch(function (err) {
             console.log(err);
         });
@@ -72,11 +76,16 @@ class PouchDbComponent extends React.Component {
     };
 
 
-    handleDelete = () => {
-        PouchDb.get(this.state.ownId).then(function (doc) {
+    handleDelete = (id) => {
+        let deleteId = id;
+        if (!deleteId) {
+            deleteId = this.state.ownId
+        }
+        PouchDb.get(deleteId).then(function (doc) {
             return PouchDb.remove(doc);
-        }).then(function (result) {
-            console.log(result)
+        }).then((result) => {
+            console.log(result);
+            this.handleShowAll();
         }).catch(function (err) {
             console.log(err);
         });
@@ -84,6 +93,10 @@ class PouchDbComponent extends React.Component {
 
 
     handleDeleteAll = () => {
+        for (let i = 0; i < this.state.data.rows.length; i++) {
+            this.handleDelete(this.state.data.rows[i].id)
+        }
+        this.handleShowAll();
     };
 
     handleEdit = () => {
@@ -107,14 +120,13 @@ class PouchDbComponent extends React.Component {
         PouchDb.allDocs({
             include_docs: true,
             attachments: true
-        }).then(function (result) {
+        }).then((result) => {
             console.log(result);
+            this.setState({data: result})
         }).catch(function (err) {
             console.log(err);
         });
     };
-
-
 
 
     render() {
@@ -125,10 +137,21 @@ class PouchDbComponent extends React.Component {
                     <Grid container
                           spacing={2}
                           style={{
-                              width: "70%",
-                              paddingLeft: "10%",
+                              width: "100%",
+                              paddingLeft: "10px",
+                              paddingRight: "10px"
                           }}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
+                            <TextField
+                                name={"ownId"}
+                                style={{width: "200px", height: "50px"}}
+                                variant="standard"
+                                placeholder="Id"
+                                value={this.state.ownId || ""}
+                                onChange={this.handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
                             <Button
                                 onClick={this.handleAddId}
                                 style={{
@@ -148,16 +171,6 @@ class PouchDbComponent extends React.Component {
                                     Добавить элемент c айди
                                 </Typography>
                             </Button>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField
-                                name={"ownId"}
-                                style={{width: "200px", height: "50px"}}
-                                variant="standard"
-                                placeholder="Id"
-                                value={this.state.ownId || ""}
-                                onChange={this.handleChange}
-                            />
                         </Grid>
                         <Grid xs={12} item>
                             <Button
@@ -260,10 +273,48 @@ class PouchDbComponent extends React.Component {
                                     color: "#fff",
                                     textTransform: "none"
                                 }}>
-                                    Вывести все элементы
+                                    Вывести все в консоль
                                 </Typography>
                             </Button>
                         </Grid>
+                        <Grid xs={12} item>
+                            <Button
+                                onClick={this.handleDeleteAll}
+                                style={{
+                                    height: "50px",
+                                    minWidth: "300px",
+                                    maxWidth: "300px"
+                                }}
+                                fullWidth
+                                color={"secondary"}
+                                variant="contained"
+                            >
+                                <Typography sx={{
+                                    fontSize: "20px",
+                                    color: "#fff",
+                                    textTransform: "none"
+                                }}>
+                                    Удалить все элементы
+                                </Typography>
+                            </Button>
+                        </Grid>
+                        {this.state.data && this.state.data.rows.map((item) => {
+                            return (
+                                <Grid xs={12} item key={item.id}>
+                                    <div style={{width: "100%"}}>
+                                        <div>
+                                            {item.doc.nameMethod}
+                                        </div>
+                                        <div style={{marginRight: "20px", marginLeft: "20px",}}>
+                                            {item.doc.title}
+                                        </div>
+                                        <div>
+                                            {item.id}
+                                        </div>
+                                    </div>
+                                </Grid>
+                            )
+                        })}
                     </Grid>
                 </form>
             </div>);
