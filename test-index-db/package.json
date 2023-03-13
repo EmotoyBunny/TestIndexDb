@@ -56,7 +56,9 @@
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "0.13.7",
     "web-vitals": "^2.1.4",
-    "whatwg-fetch": "3.4.0"
+    "whatwg-fetch": "3.4.0",
+    "chart.js": "^4.0.0",
+    "react-chartjs-2": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

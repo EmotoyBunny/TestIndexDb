@@ -6,6 +6,28 @@ import {Grid, Typography, Button, TextField} from '@mui/material';
 import {withTheme} from "@mui/styles";
 import {PouchDb} from "../Pouchdb"
 import {textConst} from "./text";
+import {Line} from 'react-chartjs-2';
+import {Chart} from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js'
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+)
 
 /**
  * Компонент авторизации
@@ -51,13 +73,15 @@ class PouchDbComponent extends React.Component {
     handleAddNotId = () => {
         let {log, i} = this.state;
         const startAdd = new Date().getTime();
-        if (i < 100000) {
+        let count = 500;
+        if (i < count) {
             PouchDb.post({
                 title: textConst.text,
             }).then((res) => {
                 const endAdd = new Date().getTime();
                 log.push({
                     name: "add",
+                    index: log.length - 1,
                     time: (endAdd - startAdd)
                 });
                 return res;
@@ -67,6 +91,7 @@ class PouchDbComponent extends React.Component {
                     const endTake = new Date().getTime();
                     log.push({
                         name: "take",
+                        index: log.length - 1,
                         time: (endTake - startTake)
                     });
                     return doc;
@@ -80,12 +105,13 @@ class PouchDbComponent extends React.Component {
                         const endEdit = new Date().getTime();
                         log.push({
                             name: "edit",
+                            index: log.length - 1,
                             time: (endEdit - startEdit)
                         });
                         this.setState({log: log, i: i + 1}, () => {
                             if (i % 1000 === 0) {
                                 console.log(i)
-                            } else if (i === (100000 - 1)) {
+                            } else if (i === (count - 1)) {
                                 this.handleShowAll();
                                 console.log("Finish")
                             }
@@ -188,18 +214,83 @@ class PouchDbComponent extends React.Component {
             include_docs: true,
             attachments: true
         }).then((result) => {
-            console.log(result)
+            console.log(result);
             this.setState({data: result})
         }).catch(function (err) {
             console.log(err);
         });
     };
 
+    showCharts = () => {
+        let data = {};
+        let options = {};
+        let labels = this.state.log.slice(this.state.log.length - 200);
+        data = {
+            labels: labels.map((item, index) => {
+                return item.index;
+            }),
+            datasets: [
+                {
+                    label: 'add',
+                    showLine: true,
+                    data: labels.map((item, index) => {
+                        if (item.name === "add" && index !== 0) {
+                            return item.time;
+                        }
+                    }),
+                    borderWidth: 4,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                },
+                {
+                    label: 'take',
+                    showLine: true,
+                    data: labels.map((item, index) => {
+                        if (item.name === "take") {
+                            return item.time;
+                        }
+                    }),
+                    borderWidth: 4,
+                    borderColor: 'rgb(53, 162, 235)',
+                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                },
+                {
+                    label: 'edit',
+                    showLine: true,
+                    data: labels.map((item, index) => {
+                        if (item.name === "edit") {
+                            return item.time;
+                        }
+                    }),
+                    borderColor: 'rgb(0, 255, 0)',
+                    borderWidth: 4,
+                    backgroundColor: 'rgba(0, 255, 0, 0.5)',
+                },
+            ],
+            borderWidth: 1
+        };
+        options = {
+            responsive: true,
+            type: 'line',
+            animation: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Chart.js Line Chart',
+                },
+            },
+        };
+        return {data, options}
+    };
 
     render() {
+        let {data, options} = this.showCharts();
         return (
             <div
-                style={{width: "100%", position: "relative", overflow: "hidden"}}>
+                style={{width: "100%", position: "relative"}}>
                 <form>
                     <Grid container
                           spacing={2}
@@ -271,182 +362,14 @@ class PouchDbComponent extends React.Component {
                                 </Typography>
                             </Button>
                         </Grid>
-                        {/*<Grid item xs={12}>
-                            <TextField
-                                name={"ownId"}
-                                style={{width: "200px", height: "50px"}}
-                                variant="standard"
-                                placeholder="Id"
-                                value={this.state.ownId || ""}
-                                onChange={this.handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button
-                                onClick={this.handleAddId}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Добавить элемент c айди
-                                </Typography>
-                            </Button>
-                        </Grid>
-                        <Grid xs={12} item>
-                            <Button
-                                onClick={this.handleAddNotId}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Добавить элемент без айди
-                                </Typography>
-                            </Button>
-                        </Grid>
-                        <Grid xs={12} item>
-                            <Button
-                                onClick={this.handleShow}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Вывести элемент по айди
-                                </Typography>
-                            </Button>
-                        </Grid>
-                        <Grid xs={12} item>
-                            <Button
-                                onClick={this.handleDelete}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Удалить элемент по айди
-                                </Typography>
-                            </Button>
-                        </Grid>
-                        <Grid xs={12} item>
-                            <Button
-                                onClick={this.handleEdit}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Изменить элемент по айди
-                                </Typography>
-                            </Button>
-                        </Grid>
-                        <Grid xs={12} item>
-                            <Button
-                                onClick={this.handleShowAll}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Вывести все в консоль
-                                </Typography>
-                            </Button>
-                        </Grid>
-                        <Grid xs={12} item>
-                            <Button
-                                onClick={this.handleDeleteAll}
-                                style={{
-                                    height: "50px",
-                                    minWidth: "300px",
-                                    maxWidth: "300px"
-                                }}
-                                fullWidth
-                                color={"secondary"}
-                                variant="contained"
-                            >
-                                <Typography sx={{
-                                    fontSize: "20px",
-                                    color: "#fff",
-                                    textTransform: "none"
-                                }}>
-                                    Удалить все элементы
-                                </Typography>
-                            </Button>
-                        </Grid>*/}
-                        {/*{this.state.data && this.state.data.rows.map((item) => {
-                            return (
-                                <Grid xs={12} item key={item.id}>
-                                    <div style={{width: "100%"}}>
-                                        <div>
-                                            {item.doc.nameMethod}
-                                        </div>
-                                        <div style={{marginRight: "20px", marginLeft: "20px",}}>
-                                            {item.doc.title}
-                                        </div>
-                                        <div>
-                                            {item.id}
-                                        </div>
-                                    </div>
-                                </Grid>
-                            )
-                        })}*/}
                     </Grid>
                 </form>
+                <div>
+                    <Chart data={data} type={"line"} options={options}/>
+                </div>
+                {/* <div>
+                    <Line data={data} options={options}/>
+                </div>*/}
             </div>);
     }
 }
