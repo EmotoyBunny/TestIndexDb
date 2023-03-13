@@ -73,7 +73,7 @@ class PouchDbComponent extends React.Component {
     handleAddNotId = () => {
         let {log, i} = this.state;
         const startAdd = new Date().getTime();
-        let count = 500;
+        let count = 100000;
         if (i < count) {
             PouchDb.post({
                 title: textConst.text,
