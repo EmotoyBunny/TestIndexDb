@@ -38,18 +38,15 @@ class PouchDbComponent extends React.Component {
         super(props);
 
         this.state = {
-            user: {
-                username: "",
-                password: "",
-            },
             i: 0,
             j: 0,
             idArray: [],
             log: [],
             data: {},
             ownId: "",
-            pageHeightClient: 600,
         };
+        this.logRes = [];
+        this.countTest = 0;
     }
 
     componentDidMount = () => {
@@ -79,9 +76,9 @@ class PouchDbComponent extends React.Component {
                 title: textConst.text,
             }).then((res) => {
                 const endAdd = new Date().getTime();
-                log.push({
+                this.logRes.push({
                     name: "add",
-                    index: log.length - 1,
+                    index: this.logRes.length - 1,
                     time: (endAdd - startAdd)
                 });
                 return res;
@@ -89,9 +86,9 @@ class PouchDbComponent extends React.Component {
                 const startTake = new Date().getTime();
                 PouchDb.get(res.id).then((doc) => {
                     const endTake = new Date().getTime();
-                    log.push({
+                    this.logRes.push({
                         name: "take",
-                        index: log.length - 1,
+                        index: this.logRes.length - 1,
                         time: (endTake - startTake)
                     });
                     return doc;
@@ -103,15 +100,16 @@ class PouchDbComponent extends React.Component {
                         title: textConst.text + "1",
                     }).then(() => {
                         const endEdit = new Date().getTime();
-                        log.push({
+                        this.logRes.push({
                             name: "edit",
-                            index: log.length - 1,
+                            index: this.logRes.length - 1,
                             time: (endEdit - startEdit)
                         });
-                        this.setState({log: log, i: i + 1}, () => {
+                        this.setState({i: i + 1}, () => {
                             if (i % 1000 === 0) {
                                 console.log(i)
                             } else if (i === (count - 1)) {
+                                this.setState({log: this.logRes})
                                 this.handleShowAll();
                                 console.log("Finish")
                             }
@@ -224,27 +222,32 @@ class PouchDbComponent extends React.Component {
     showCharts = () => {
         let data = {};
         let options = {};
-        let arrayAdd = this.state.log.map((item, index) => {
-            if (item.name === "add" && index!==0) {
-                return item.time;
-            }
-        });
-        let arrayEdit = this.state.log.map((item, index) => {
-            if (item.name === "edit") {
-                return item.time;
-            }
-        });
-        let arrayTake = this.state.log.map((item, index) => {
-            if (item.name === "take") {
-                return item.time;
-            }
-        });
-        arrayAdd = arrayAdd.filter(element => element != null);
-        arrayEdit = arrayEdit.filter(element => element != null);
-        arrayTake = arrayTake.filter(element => element != null);
+        let arrayAdd = [];
+        let arrayEdit = [];
+        let arrayTake = [];
+        if (this.state.i === 100000) {
+            arrayAdd = this.state.log.map((item, index) => {
+                if (item.name === "add" && index !== 0) {
+                    return item.time;
+                }
+            });
+            arrayEdit = this.state.log.map((item, index) => {
+                if (item.name === "edit") {
+                    return item.time;
+                }
+            });
+            arrayTake = this.state.log.map((item, index) => {
+                if (item.name === "take") {
+                    return item.time;
+                }
+            });
+            arrayAdd = arrayAdd.filter(element => element != null);
+            arrayEdit = arrayEdit.filter(element => element != null);
+            arrayTake = arrayTake.filter(element => element != null);
+        }
         data = {
             labels: arrayEdit.map((item, index) => {
-                 return index;
+                return index;
             }),
             datasets: [
                 {
@@ -304,7 +307,7 @@ class PouchDbComponent extends React.Component {
                               paddingLeft: "10px",
                               paddingRight: "10px"
                           }}>
-                        <Grid xs={12} item>
+                        <Grid xs={3} item>
                             <Button
                                 onClick={this.startTest}
                                 style={{
@@ -325,7 +328,7 @@ class PouchDbComponent extends React.Component {
                                 </Typography>
                             </Button>
                         </Grid>
-                        <Grid xs={12} item>
+                        <Grid xs={3} item>
                             <Button
                                 onClick={this.showLog}
                                 style={{
@@ -346,7 +349,7 @@ class PouchDbComponent extends React.Component {
                                 </Typography>
                             </Button>
                         </Grid>
-                        <Grid xs={12} item>
+                        <Grid xs={3} item>
                             <Button
                                 onClick={this.handleDeleteAll}
                                 style={{
@@ -367,17 +370,20 @@ class PouchDbComponent extends React.Component {
                                 </Typography>
                             </Button>
                         </Grid>
+                        <Grid xs={3} item>
+                            <Typography sx={{
+                                fontSize: "20px",
+                                color: "#000",
+                                textTransform: "none"
+                            }}>
+                                {this.state.i} / 100000
+                            </Typography>
+                        </Grid>
                         <Grid xs={12} item>
-                            <Chart data={data} type={"line"} options={options}/>
+                            <Chart data={data} type={"line"} options={options} height={100}/>
                         </Grid>
                     </Grid>
                 </form>
-                <div>
-
-                </div>
-                {/* <div>
-                    <Line data={data} options={options}/>
-                </div>*/}
             </div>);
     }
 }
