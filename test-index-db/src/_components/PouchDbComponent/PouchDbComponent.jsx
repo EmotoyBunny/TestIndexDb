@@ -224,46 +224,51 @@ class PouchDbComponent extends React.Component {
     showCharts = () => {
         let data = {};
         let options = {};
-        let labels = this.state.log.slice(this.state.log.length - 200);
+        let arrayAdd = this.state.log.map((item, index) => {
+            if (item.name === "add" && index!==0) {
+                return item.time;
+            }
+        });
+        let arrayEdit = this.state.log.map((item, index) => {
+            if (item.name === "edit") {
+                return item.time;
+            }
+        });
+        let arrayTake = this.state.log.map((item, index) => {
+            if (item.name === "take") {
+                return item.time;
+            }
+        });
+        arrayAdd = arrayAdd.filter(element => element != null);
+        arrayEdit = arrayEdit.filter(element => element != null);
+        arrayTake = arrayTake.filter(element => element != null);
         data = {
-            labels: labels.map((item, index) => {
-                return item.index;
+            labels: arrayEdit.map((item, index) => {
+                 return index;
             }),
             datasets: [
                 {
                     label: 'add',
                     showLine: true,
-                    data: labels.map((item, index) => {
-                        if (item.name === "add" && index !== 0) {
-                            return item.time;
-                        }
-                    }),
-                    borderWidth: 4,
+                    data: arrayAdd,
+                    borderWidth: 2,
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                 },
                 {
                     label: 'take',
                     showLine: true,
-                    data: labels.map((item, index) => {
-                        if (item.name === "take") {
-                            return item.time;
-                        }
-                    }),
-                    borderWidth: 4,
+                    data: arrayTake,
+                    borderWidth: 2,
                     borderColor: 'rgb(53, 162, 235)',
                     backgroundColor: 'rgba(53, 162, 235, 0.5)',
                 },
                 {
                     label: 'edit',
                     showLine: true,
-                    data: labels.map((item, index) => {
-                        if (item.name === "edit") {
-                            return item.time;
-                        }
-                    }),
+                    data: arrayEdit,
                     borderColor: 'rgb(0, 255, 0)',
-                    borderWidth: 4,
+                    borderWidth: 2,
                     backgroundColor: 'rgba(0, 255, 0, 0.5)',
                 },
             ],
@@ -362,10 +367,13 @@ class PouchDbComponent extends React.Component {
                                 </Typography>
                             </Button>
                         </Grid>
+                        <Grid xs={12} item>
+                            <Chart data={data} type={"line"} options={options}/>
+                        </Grid>
                     </Grid>
                 </form>
                 <div>
-                    <Chart data={data} type={"line"} options={options}/>
+
                 </div>
                 {/* <div>
                     <Line data={data} options={options}/>
